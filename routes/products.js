@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
     if (err) {
       throw err;
     }
-    res.send(result.rows);
+    res.status(200).send(result.rows);
   });
 });
 
@@ -17,7 +17,7 @@ router.get("/:id", (req, res) => {
     if (err) {
       throw err;
     }
-    res.send(results.rows);
+    res.status(200).send(results.rows);
   });
 });
 

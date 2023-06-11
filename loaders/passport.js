@@ -1,5 +1,5 @@
 const passport = require("passport");
-const LocalStrategy = require("local-passport").Strategy;
+// const LocalStrategy = require("local-passport").Strategy;
 const db = require("../db");
 
 app.use(passport.initialize());
@@ -21,16 +21,16 @@ passport.deserializeUser((id, done) => {
 });
 
 // Configure local strategy to be use for local login
-passport.use(
-  new LocalStrategy(function (username, password, done) {
-    db.customers.findByUsername({ email: username }, (err, user) => {
-      if (err) return done(err);
+// passport.use(
+//   new LocalStrategy(function (username, password, done) {
+//     db.customers.findByUsername({ email: username }, (err, user) => {
+//       if (err) return done(err);
 
-      if (!user) return done(null, false);
+//       if (!user) return done(null, false);
 
-      if (user.password != password) return done(null, false);
+//       if (user.password != password) return done(null, false);
 
-      return done(null, user);
-    });
-  })
-);
+//       return done(null, user);
+//     });
+//   })
+// );

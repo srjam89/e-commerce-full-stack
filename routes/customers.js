@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
 const router = express.Router();
 const db = require("../db");
 
@@ -54,31 +55,40 @@ const passwordHash = async (password, saltRounds) => {
   return null;
 };
 
-router.post("/login", async (req, res) => {
+router.post("/login", (req, res) => {
   const { password, email } = req.body;
-
+  console.log("hello");
   try {
-    const customer = await db.query(
-      "SELECT * FROM customers WHERE email = $1",
-      [email]
+    passport.use(
+      new LocalStrategy((email, password, done) => {
+        console.log("fgg");
+        db.customers.findOne({ email: email }, (err, user) => {
+          if (err) {
+            done(err);
+            console.log("Error has occurred.");
+            return res.status(400).send();
+          }
+          if (!user) {
+            done(null, false);
+            console.log("No user found.");
+            return res.status(401).send();
+          }
+          const matchedPassword = bcrypt.compare(password, user.password);
+
+          if (!matchedPassword) {
+            done(null, false);
+            console.log("Passwords did not match!");
+            return res.status(401).send();
+          }
+
+          done(null, user);
+          res.send(user);
+        });
+      })
     );
-
-    if (customer.rows.length === 0) {
-      console.log("Customer does not exist!");
-      return res.status(400).send();
-    }
-    const user = customer.rows[0];
-
-    // Compare passwords:
-    const matchedPassword = await bcrypt.compare(password, user.password);
-
-    if (!matchedPassword) {
-      console.log("Passwords did not match!");
-      return res.redirect("login");
-    }
-
-    res.send(user);
+    console.log("efrg");
   } catch (err) {
+    console.log({ err });
     res.status(500).json({ message: err.message });
   }
 });

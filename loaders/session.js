@@ -11,3 +11,5 @@ app.use(
     },
   })
 );
+
+module.exports = session;
